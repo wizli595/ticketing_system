@@ -22,4 +22,4 @@ build:
       sync:
         manual:
           - dest: .
-            src: "**/*.tsx"
+            src: "**/*.js"
