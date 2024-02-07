@@ -1,0 +1,13 @@
+.header {
+  background-color: #343a40; /* Dark gray */
+  color: #fff; /* White */
+}
+
+.link {
+  color: #fff !important; /* White */
+  text-decoration: none !important; /* No underline */
+}
+.landing {
+  text-align: center !important;
+  margin-top: 50px !important;
+}

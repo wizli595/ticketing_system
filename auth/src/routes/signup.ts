@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 import { ValidationChain, body } from "express-validator";
 import jwt from 'jsonwebtoken';
 import { User } from "../models/user-model";
-import { BadRequestError } from "../errors/bad-request-error";
-import { validateRequest } from "../middlewares/validate-request";
+import { BadRequestError, validateRequest } from "@wizlitickets/common";
+
 
 const router = Router()
 

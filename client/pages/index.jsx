@@ -1,11 +1,10 @@
 import { buildClient } from "@/api/build-client";
-
+import style from '@/assets/index.module.css';
 
 
 const LandingPage = ({ currentUser }) => {
-    // console.log(currentUser)
     return (
-        <div>
+        <div className={style.landing}>
             {currentUser ? (
                 <h1>You are signed in</h1>
             ) : (
@@ -16,7 +15,7 @@ const LandingPage = ({ currentUser }) => {
 }
 
 LandingPage.getInitialProps = async (context) => {
-    console.log('LANDING PAGE!');
+
     const client = buildClient(context);
     const { data } = await client.get('/api/users/current');
 

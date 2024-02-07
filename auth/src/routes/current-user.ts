@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { currentUser } from "../middlewares/current-user";
+import { currentUser } from "@wizlitickets/common";
 // import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router()
