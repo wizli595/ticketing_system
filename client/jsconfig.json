@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "allowImportingTsExtensions": true
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}
