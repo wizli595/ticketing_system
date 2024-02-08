@@ -23,7 +23,7 @@
     "@types/express-async-wrap": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/mongoose": "^5.11.97",
-    "@wizlitickets/common": "^1.0.2",
+    "@wizlitickets/common": "^1.0.3",
     "cookie-session": "^2.1.0",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
