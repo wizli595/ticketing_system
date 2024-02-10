@@ -8,6 +8,12 @@ interface UserAttrs {
     password: string;
 }
 
+// Define a more specific type for the transformation result
+interface TransformRet {
+    id?: string; // Define other properties as needed, mirroring the document's structure but with id instead of _id.
+    [key: string]: any; // This allows for additional properties not explicitly defined in the type.
+}
+
 // @desc properties the User model need
 interface UserModel extends mongoose.Model<UserDoc> {
     build(attrs: UserAttrs): UserDoc;
@@ -31,23 +37,26 @@ const userSchema = new mongoose.Schema({
     timestamps: true,
     versionKey: false,
     toJSON: {
-        transform(doc, ret) {
-            ret.id = ret._id
+        transform(doc: UserDoc, ret: TransformRet): any {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            ret.id = ret._id;
             delete ret._id;
             delete ret.password;
+
         }
     }
 })
 
 userSchema.pre('save', async function (done) {
     if (this.isModified('password')) {
-        const hashed = await Password.toHash(this.get('password'));
+        const password = this.get('password') as string;
+        const hashed = await Password.toHash(password);
         this.set('password', hashed);
     }
     done();
 })
 
-userSchema.statics.build = (attrs: UserAttrs) => {
+userSchema.statics.build = (attrs: UserAttrs): UserDoc => {
     return new User(attrs);
 }
 

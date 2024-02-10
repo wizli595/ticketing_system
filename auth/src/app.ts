@@ -35,9 +35,9 @@ app.use("/api/users", signOutRouter)
 app.use("/api/users", signUpRouter)
 
 
-app.all("*", async (req, res) => {
+app.all("*", asyncHandler(async (req, res) => {
     throw new NotFoundError();
-})
+}))
 
 app.use(errorHandler)
 

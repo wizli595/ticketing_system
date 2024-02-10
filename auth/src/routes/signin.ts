@@ -11,7 +11,7 @@ const userValidationBody: ValidationChain[] = [
     body('password').trim().notEmpty().withMessage("password must be supplied")
 ];
 
-router.post('/signin', userValidationBody, validateRequest, async (req: Request, res: Response) => {
+router.post('/signin', userValidationBody, validateRequest, async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
