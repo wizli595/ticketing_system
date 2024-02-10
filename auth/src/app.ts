@@ -19,7 +19,10 @@ app.set('trust proxy', true);
 
 const accessLogStrem = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLogStrem }))
-console.log(path.join(__dirname, 'access.log'));
+
+// just for testing
+app.use(morgan('dev'))
+
 app.use(express.json())
 app.use(cookieSession({
     signed: false,
