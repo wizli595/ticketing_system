@@ -1,9 +1,10 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import { generateObjectId } from '../../utils/generate-objectId';
 
 declare global {
-    let signin: () => string[];
+    var signin: () => string[];
 }
 
 let mongo: any
@@ -33,7 +34,7 @@ afterAll(async () => {
 
 global.signin = () => {
     const payload = {
-        id: 'fhuvsd',
+        id: generateObjectId(),
         email: "wizli@email.com"
     }
 

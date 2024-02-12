@@ -7,6 +7,9 @@ import morgan from 'morgan';
 
 import cookieSession from 'cookie-session';
 import { createTicketRouter } from './routes/new';
+import { showTicketRouter } from './routes/show';
+import { indexTicketRouter } from './routes';
+import { updateTicketRoute } from './routes/update';
 
 
 const app = express()
@@ -16,7 +19,7 @@ app.set('trust proxy', true);
 
 const accessLogStrem = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLogStrem }))
-
+console.log(__dirname);
 app.use(express.json())
 app.use(cookieSession({
     signed: false,
@@ -26,7 +29,9 @@ app.use(cookieSession({
 app.use(currentUser)
 
 app.use("/api", createTicketRouter);
-
+app.use("/api", showTicketRouter);
+app.use('/api', indexTicketRouter)
+app.use('/api', updateTicketRoute)
 
 
 
