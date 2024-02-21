@@ -2,6 +2,8 @@ import { requireAuth, validateRequest } from '@wizlitickets/common';
 import { Router, Request, Response } from 'express';
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
+import { TicketCreatedPublisher } from '../events/publishers/ticket-created-publisher';
+import { natsWrapper } from '../../utils/nats-wrapper';
 
 const router = Router();
 
@@ -20,6 +22,14 @@ router.post("/tickets", requireAuth, ticketsValidation,
             userId: req.currentUser!.id
         })
         await ticket.save()
+
+
+        await new TicketCreatedPublisher(natsWrapper.client).publish({
+            id: ticket.id,
+            title: ticket.title,
+            price: ticket.price,
+            userId: ticket.userId
+        })
 
         res.status(201).send(ticket);
     })
