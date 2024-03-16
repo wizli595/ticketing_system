@@ -7,6 +7,18 @@ declare global {
     var signin: () => string[];
 }
 
+jest.mock('../../utils/nats-wrapper', () => {
+    return {
+        natsWrapper: {
+            client: {
+                publish: jest.fn((subject, data, callback) => {
+                    console.log("Publish mock called");
+                    callback();
+                }),
+            },
+        },
+    };
+});
 let mongo: any
 beforeAll(async () => {
 

@@ -7,6 +7,8 @@ import {
     NotAuthorizedError
 } from '@wizlitickets/common';
 import { Ticket } from '../models/ticket';
+import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
+import { natsWrapper } from '../../utils/nats-wrapper';
 
 const router = Router();
 const ticketsValidation = [
@@ -30,6 +32,9 @@ router.put('/tickets/:id', requireAuth, ticketsValidation, validateRequest,
         })
 
         await ticket.save()
+
+        new TicketUpdatedPublisher(natsWrapper.client)
+            .publish(ticket.toJSON())
 
         res.send(ticket)
 
