@@ -36,7 +36,8 @@ app.use("/api/users", signUpRouter)
 
 
 
-app.all("*", (req, res) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.all("*", (_req, _res) => {
     throw new NotFoundError();
 })
 

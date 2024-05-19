@@ -22,7 +22,7 @@ build:
           sync:
               manual:
                   - dest: .
-                    src: "**/*.{js,jsx}"
+                    src: "**/*.{ts,tsx}"
         - image: abdessalamwizli/tickets
           context: tickets
           docker:

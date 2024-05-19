@@ -3,11 +3,15 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../app';
 
+
 declare global {
+    // eslint-disable-next-line no-var
     var signin: () => Promise<string[]>;
 }
+  
 
-let mongo: any
+
+let mongo: MongoMemoryServer;
 beforeAll(async () => {
 
     process.env.JWT_KEY = "huhjh";
@@ -21,7 +25,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     const collections = await mongoose.connection.db.collections();
-    for (let collection of collections) {
+    for (const collection of collections) {
         await collection.deleteMany({});
     }
 })
@@ -32,11 +36,13 @@ afterAll(async () => {
     await mongoose.connection.close();
 })
 
+
+
 global.signin = async () => {
     const credentials = {
         email: "wizli@email.com",
         password: "password"
-    }
+    };
     const response = await request(app)
         .post('/api/users/signup')
         .send(credentials)
@@ -45,4 +51,4 @@ global.signin = async () => {
     const cookie = response.get('Set-Cookie');
 
     return cookie;
-}
+};

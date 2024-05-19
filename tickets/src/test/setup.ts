@@ -4,8 +4,10 @@ import jwt from 'jsonwebtoken';
 import { generateObjectId } from '../../utils/generate-objectId';
 
 declare global {
+    // eslint-disable-next-line no-var
     var signin: () => string[];
 }
+  
 
 jest.mock('../../utils/nats-wrapper', () => {
     return {
@@ -19,7 +21,7 @@ jest.mock('../../utils/nats-wrapper', () => {
         },
     };
 });
-let mongo: any
+let mongo: MongoMemoryServer;
 beforeAll(async () => {
 
     process.env.JWT_KEY = "huhjh";
@@ -33,7 +35,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     const collections = await mongoose.connection.db.collections();
-    for (let collection of collections) {
+    for (const collection of collections) {
         await collection.deleteMany({});
     }
 })
@@ -43,6 +45,14 @@ afterAll(async () => {
     await mongo.stop;
     await mongoose.connection.close();
 })
+
+export {};
+
+declare global {
+    interface Global {
+        signin: () => string[];
+    }
+}
 
 global.signin = () => {
     const payload = {

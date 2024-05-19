@@ -37,8 +37,7 @@ const userSchema = new mongoose.Schema({
     timestamps: true,
     versionKey: false,
     toJSON: {
-        transform(doc: UserDoc, ret: TransformRet): any {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        transform(doc: UserDoc, ret: TransformRet) {
             ret.id = ret._id;
             delete ret._id;
             delete ret.password;

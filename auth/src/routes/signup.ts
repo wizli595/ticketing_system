@@ -25,7 +25,7 @@ router.post('/signup',
         if (existingUser) throw new BadRequestError("Email in use");
 
         const user = User.build({ email, password });
-        await user.save()
+        await user.save();
 
         // set JWT
         const signedJWT = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_KEY!)
