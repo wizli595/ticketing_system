@@ -1,9 +1,8 @@
-'use client';
 import { Navbar, Container, Nav } from 'react-bootstrap';
-import Link from 'next/link';
-import styles from './components.module.css';
+import { Link } from 'next/link';
+import styles from '@/assets/index.module.css';
 
-const Header = () => {
+const Header = ({ currentUser }) => {
 
     return (<>
         <Navbar expand='md' collapseOnSelect className={styles.header}>
@@ -14,10 +13,6 @@ const Header = () => {
                 <Navbar.Toggle aria-controls='basic-nav' />
                 <Navbar.Collapse id='basic-nav'>
                     <Nav className='ms-auto'>
-                        <Nav.Link as={Link} href='/signup' className={styles.link}>Sign Up</Nav.Link>
-                        <Nav.Link as={Link} href='/signin' className={styles.link}>Sign In</Nav.Link>
-                    </Nav>
-                    {/* <Nav className='ms-auto'>
                         {currentUser ?
                             <>
                                 <Nav.Link as={Link} href='/auth/signout' className={styles.link}>Sign Out</Nav.Link>
@@ -27,7 +22,7 @@ const Header = () => {
                                 <Nav.Link as={Link} href='/auth/signin' className={styles.link}>Sign In</Nav.Link>
                             </>
                         }
-                    </Nav> */}
+                    </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
