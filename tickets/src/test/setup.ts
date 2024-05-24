@@ -9,18 +9,7 @@ declare global {
 }
   
 
-jest.mock('../../utils/nats-wrapper', () => {
-    return {
-        natsWrapper: {
-            client: {
-                publish: jest.fn((subject, data, callback) => {
-                    console.log("Publish mock called");
-                    callback();
-                }),
-            },
-        },
-    };
-});
+jest.mock('../nats-wrapper');
 let mongo: MongoMemoryServer;
 beforeAll(async () => {
 
@@ -34,6 +23,9 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+    // clear all mocks
+    jest.clearAllMocks();
+    
     const collections = await mongoose.connection.db.collections();
     for (const collection of collections) {
         await collection.deleteMany({});

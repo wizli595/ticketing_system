@@ -18,14 +18,14 @@ const start = async () => {
         })
         process.on('SIGINT', () => natsWrapper.client.close());
         process.on('SIGTERM', () => natsWrapper.client.close())
-
+        console.log(process.env.MONGO_URI);
         await mongoose.connect(process.env.MONGO_URI);
         console.log('connect to db');
     } catch (err) {
         console.log(err);
     }
     app.listen(PORT, () => {
-        console.log(`tickets service running on ${PORT} !!!!`);
+        console.log(`ORDER service running on ${PORT} !!!!`);
     })
 }
 

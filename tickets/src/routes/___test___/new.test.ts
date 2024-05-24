@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
-
+import {natsWrapper} from '../../nats-wrapper';
 
 describe('POST /api/tickets', function () {
 
@@ -64,5 +64,17 @@ describe('POST /api/tickets', function () {
             .expect(201)
         Tickets = await Ticket.find({});
         expect(Tickets.length).toEqual(1);
+    })
+
+    it('publishes an event', async () => {
+        await request(app)
+            .post('/api/tickets')
+            .set('Cookie', global.signin())
+            .send({
+                title: "Breaking Bad",
+                price: 500
+            })
+            .expect(201)
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
     })
 })

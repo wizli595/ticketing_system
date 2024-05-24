@@ -8,7 +8,7 @@ import {
 } from '@wizlitickets/common';
 import { Ticket } from '../models/ticket';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
-import { natsWrapper } from '../../utils/nats-wrapper';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = Router();
 const ticketsValidation = [

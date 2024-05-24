@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import { generateObjectId } from '../../../utils/generate-objectId';
 import { createTickets } from '../../../utils/create-ticket';
+import { natsWrapper } from '../../nats-wrapper';
 describe('PUT /api/ticktes/:id', function () {
     it('returns a 404 if provided id does not exist', async () => {
         const id = generateObjectId();
@@ -77,5 +78,26 @@ describe('PUT /api/ticktes/:id', function () {
             .send()
         expect(ticketResponse.body.title).toEqual(title);
         expect(ticketResponse.body.price).toEqual(price);
+    });
+
+    it('publishes an event', async () => {
+        const cookie = global.signin();
+        const title = "new ep";
+        const price = 632
+
+        const response = await request(app)
+            .post('/api/tickets')
+            .set('Cookie', cookie)
+            .send({
+                title: 'ticket mood',
+                price: 896
+            })
+        await request(app)
+            .put('/api/tickets/' + response.body.id)
+            .set('Cookie', cookie)
+            .send({ title, price })
+            .expect(200)
+
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
     });
 })
