@@ -1,4 +1,6 @@
+import { NotFoundError } from "@wizlitickets/common";
 import { Request, Response, Router } from "express";
+import { Order } from "../models/order-model";
 
 
 
@@ -7,13 +9,18 @@ const router = Router();
 /**
  * @description - Get a specific order
  * @param - /api/orders/:id
- * @returns - message
  * @example - GET /api/orders/:id
  * @access - Private
+ * @returns - Order : OrderDocument
  */
 
 router.get("/orders/:id", async (req:Request, res:Response) => {
-    res.send("Orders route");
+    const { id:orderId} = req.params;
+    const order = await Order.findById(orderId).populate('ticket');
+    if(!order || order.userId !== req.currentUser!.id){
+        throw new NotFoundError();
+    }
+    res.send(order);
 });
 
 
