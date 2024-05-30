@@ -7,43 +7,44 @@ const MainForm = ({ uri, formBase }) => {
     const [credentials, setCredentials] = useState({
         email: "",
         password: ""
-    })
-    const [errors, setErrors] = useState({})
+    });
+    const [errors, setErrors] = useState({});
 
     const { doRequest, error } = useRequest({
         url: uri,
         method: 'post',
         body: credentials,
         onSuccess: () => Router.push("/")
-    })
+    });
 
     const handleChange = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setCredentials(prv => {
             return {
                 ...prv, [name]: value
-            }
-        })
+            };
+        });
         setErrors(prv => {
             return {
-                ...prv, [name] :""
-            }
+                ...prv, [name]: ""
+            };
         }
-        )
-    }
+        );
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await doRequest()
+        await doRequest();
         if (error) {
-            const fieldError = error.errors.reduce((acc, err) => {
-                acc[err.field] = err.message
-                return acc
+            console.log(error);
+            const fieldError = error.response.data.errors.reduce((acc, err) => {
+                acc[err.field] = err.message;
+                return acc;
             }
-            , {})
-            setErrors(fieldError)
+                , {});
+            setErrors(fieldError);
         }
-    }
+    };
 
     return (<>
         <FormContainer >
@@ -82,6 +83,6 @@ const MainForm = ({ uri, formBase }) => {
             </form>
         </FormContainer>
     </>);
-}
+};
 
 export default MainForm;

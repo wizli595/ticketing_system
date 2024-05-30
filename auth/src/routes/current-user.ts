@@ -4,9 +4,8 @@ import { currentUser } from "@wizlitickets/common";
 
 const router = Router();
 
-router.get('/current', currentUser, (req, res) => {
-    res.send({ currentUser: req.currentUser || null })
+router.get("/current", currentUser, (req, res) => {
+    res.send({ currentUser: req.currentUser || null });
+});
 
-})
-
-export { router as currentUserRouter }
+export { router as currentUserRouter };
