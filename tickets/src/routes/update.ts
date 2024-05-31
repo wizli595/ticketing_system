@@ -1,43 +1,52 @@
-import { Router, Request, Response } from 'express';
-import { body } from 'express-validator';
+import { Router, Request, Response } from "express";
+import { body } from "express-validator";
 import {
     validateRequest,
     requireAuth,
     NotFoundError,
-    NotAuthorizedError
-} from '@wizlitickets/common';
-import { Ticket } from '../models/ticket';
-import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
-import { natsWrapper } from '../nats-wrapper';
+    NotAuthorizedError,
+} from "@wizlitickets/common";
+import { Ticket } from "../models/ticket";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = Router();
 const ticketsValidation = [
-    body('title').not().isEmpty().withMessage('title is required'),
-    body('price').isFloat({ gt: 0 }).withMessage('Price must be greater than 0')
-]
+    body("title").not().isEmpty().withMessage("title is required"),
+    body("price")
+        .isFloat({ gt: 0 })
+        .withMessage("Price must be greater than 0"),
+];
 
-router.put('/tickets/:id', requireAuth, ticketsValidation, validateRequest,
+router.put(
+    "/tickets/:id",
+    requireAuth,
+    ticketsValidation,
+    validateRequest,
     async (req: Request, res: Response) => {
         const { id } = req.params;
-        const { title, price } = req.body
+        const { title, price } = req.body;
 
         const ticket = await Ticket.findById(id);
 
         if (!ticket) throw new NotFoundError();
 
-        if (ticket.userId !== req.currentUser?.id) throw new NotAuthorizedError();
+        if (ticket.orderId) throw new Error("Cannot edit a reserved ticket");
+
+        if (ticket.userId !== req.currentUser?.id)
+            throw new NotAuthorizedError();
 
         ticket.set({
-            title, price
-        })
+            title,
+            price,
+        });
 
-        await ticket.save()
+        await ticket.save();
 
-        new TicketUpdatedPublisher(natsWrapper.client)
-            .publish(ticket.toJSON())
+        new TicketUpdatedPublisher(natsWrapper.client).publish(ticket.toJSON());
 
-        res.send(ticket)
+        res.send(ticket);
+    }
+);
 
-    })
-
-export { router as updateTicketRoute }
+export { router as updateTicketRoute };
