@@ -22,7 +22,7 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
             title: ticketDoc.title,
             price: ticketDoc.price,
             userId: ticketDoc.userId,
-            orderId: ticketDoc.orderId,
+            orderId: ticketDoc?.orderId,
         });
 
         msg.ack();

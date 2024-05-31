@@ -39,3 +39,12 @@ build:
               manual:
                   - dest: .
                     src: "src/**/*.ts"
+        - image: abdessalamwizli/expiration
+          context: expiration
+          docker:
+              dockerfile: Dockerfile
+          sync:
+              manual:
+                  - dest: .
+                    src: "src/**/*.ts"
+
