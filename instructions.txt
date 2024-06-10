@@ -1,0 +1,10 @@
+coping the log file 
+kubectl cp <namespace>/<pod-name>:<path-in-pod> <local-path>
+
+execute Shell inside the pod
+
+kubectl exec -it <pod-name> sh
+kubectl create secret generic [secret] --from-literal=[secret_name]=[your-secret]
+
+
+Optimistic Concurrency Control "fixed by _v"

@@ -20,7 +20,7 @@
     "dependencies": {
         "@types/bull": "^4.10.0",
         "@types/morgan": "^1.9.9",
-        "@wizlitickets/common": "^1.0.21",
+        "@wizlitickets/common": "^1.0.24",
         "bull": "^4.12.9",
         "morgan": "^1.10.0",
         "node-nats-streaming": "^0.3.2",
