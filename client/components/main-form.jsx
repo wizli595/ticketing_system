@@ -36,7 +36,7 @@ const MainForm = ({ uri, formBase }) => {
         e.preventDefault();
         await doRequest();
         if (error) {
-            console.log(error);
+            console.log("err", error);
             const fieldError = error.response.data.errors.reduce((acc, err) => {
                 acc[err.field] = err.message;
                 return acc;
