@@ -15,14 +15,14 @@ build:
               manual:
                   - dest: .
                     src: "src/**/*.ts"
-        - image: abdessalamwizli/client
-          context: client
+        - image: abdessalamwizli/client-v2
+          context: client-v2
           docker:
               dockerfile: Dockerfile
           sync:
               manual:
                   - dest: .
-                    src: "**/*.{js,jsx}"
+                    src: "**/*.{ts,tsx}"
         - image: abdessalamwizli/tickets
           context: tickets
           docker:
