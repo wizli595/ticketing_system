@@ -12,6 +12,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Ensure optional public directory exists to avoid COPY failures
+RUN mkdir -p public
+
 # Build the app
 RUN npm run build
 

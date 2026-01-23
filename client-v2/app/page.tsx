@@ -502,7 +502,7 @@ export default function LandingPage() {
               variants={itemVariants} 
               className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-400 mb-6"
             >
-              What's Coming Next
+              What&#39;s Coming Next
             </motion.h2>
             <motion.p 
               variants={itemVariants}
