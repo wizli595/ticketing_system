@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-v2-depl
+  name: auth-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client-v2
+      app: auth
   template:
     metadata:
       labels:
-        app: client-v2
+        app: auth
     spec:
       containers:
-        - name: client-v2
-          image: abdessalamwizli/client-v2:latest
+        - name: auth
+          image: abdessalamwizli/auth:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -36,20 +36,23 @@ spec:
               memory: "512Mi"
               cpu: "500m"
           env:
-            - name: CLUSTER_URL
-              value: "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local"
-            - name: INGRESS_HOST
-              value: "ticketing.dev"
+            - name: MONGO_URI
+              value: "mongodb://auth-mongo-srv:27017/auth"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-v2-srv
+  name: auth-srv
 spec:
   selector:
-    app: client-v2
+    app: auth
   ports:
-    - name: client-v2
+    - name: auth
       protocol: TCP
       port: 3000
       targetPort: 3000

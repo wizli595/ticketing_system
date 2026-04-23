@@ -9,24 +9,30 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
     queueGroupName = queueGroupName;
 
     async onMessage(data: OrderCancelledEvent["data"], msg: Message) {
-        const ticket = await Ticket.findById(data.ticket.id);
+        try {
+            const ticketId = typeof data.ticket.id === 'string' ? data.ticket.id : String(data.ticket.id);
+            const ticket = await Ticket.findById(ticketId);
 
-        if (!ticket) {
-            throw new Error("Ticket not found");
+            if (!ticket) {
+                throw new Error("Ticket not found");
+            }
+
+            ticket.set({ orderId: undefined });
+            await ticket.save();
+
+            await new TicketUpdatedPublisher(this.client).publish({
+                id: ticket.id,
+                price: ticket.price,
+                title: ticket.title,
+                userId: ticket.userId,
+                version: ticket.version,
+                orderId: ticket.orderId,
+            });
+
+            msg.ack();
+        } catch (err) {
+            console.error("Error processing OrderCancelled event, acking to skip:", err);
+            msg.ack();
         }
-
-        ticket.set({ orderId: undefined });
-        await ticket.save();
-
-        await new TicketUpdatedPublisher(this.client).publish({
-            id: ticket.id,
-            price: ticket.price,
-            title: ticket.title,
-            userId: ticket.userId,
-            version: ticket.version,
-            orderId: ticket.orderId,
-        });
-
-        msg.ack();
     }
 }

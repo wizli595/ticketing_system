@@ -39,6 +39,20 @@ export async function fetchOrder(orderId: string): Promise<Order | null> {
   }
 }
 
+export async function cancelOrder(
+  orderId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const client = await buildAxios();
+    await client.delete(`/api/orders/${orderId}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Cancel order error:', error);
+    const errorMessage = error.response?.data?.errors?.[0]?.message || 'Failed to cancel order';
+    return { success: false, error: errorMessage };
+  }
+}
+
 export async function processPayment(
   token: string,
   orderId: string

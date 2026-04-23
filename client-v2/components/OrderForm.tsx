@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ErrorAlert, Spinner } from './FormComponents';
+import { useToast } from './Toast';
 
 interface OrderFormProps {
   ticketId: string;
@@ -11,6 +12,7 @@ interface OrderFormProps {
 
 export function OrderForm({ ticketId }: OrderFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Array<{ message: string }> | null>(null);
 
@@ -35,6 +37,7 @@ export function OrderForm({ ticketId }: OrderFormProps) {
       }
 
       const order = await response.json();
+      toast('Order created! Complete payment to secure your ticket.', 'success');
       router.push(`/orders/${order.id}`);
     } catch (err) {
       setErrors([{ message: err instanceof Error ? err.message : 'An error occurred' }]);

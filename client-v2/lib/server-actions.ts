@@ -100,6 +100,39 @@ export async function fetchMyTickets(): Promise<Ticket[]> {
 }
 
 /**
+ * Update a ticket
+ */
+export async function updateTicket(
+  ticketId: string,
+  data: { title: string; price: number }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const client = await buildAxios();
+    await client.put(`/api/tickets/${ticketId}`, data);
+    return { success: true };
+  } catch (error: any) {
+    const msg = error?.response?.data?.errors?.[0]?.message || 'Failed to update ticket';
+    return { success: false, error: msg };
+  }
+}
+
+/**
+ * Delete a ticket
+ */
+export async function deleteTicket(
+  ticketId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const client = await buildAxios();
+    await client.delete(`/api/tickets/${ticketId}`);
+    return { success: true };
+  } catch (error: any) {
+    const msg = error?.response?.data?.errors?.[0]?.message || 'Failed to delete ticket';
+    return { success: false, error: msg };
+  }
+}
+
+/**
  * Fetch all orders for the current user
  */
 export async function fetchOrders(): Promise<Order[]> {

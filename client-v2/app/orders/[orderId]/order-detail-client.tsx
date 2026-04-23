@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import StripeCheckout from 'react-stripe-checkout';
-import { processPayment } from '@/lib/order-actions';
+import { processPayment, cancelOrder } from '@/lib/order-actions';
 import { Spinner } from '@/components/FormComponents';
+import { useToast } from '@/components/Toast';
 
 interface Order {
   id: string;
@@ -23,9 +24,11 @@ interface OrderDetailClientProps {
 }
 
 export function OrderDetailClient({ initialOrder, userEmail }: OrderDetailClientProps) {
+  const { toast } = useToast();
   const [order, setOrder] = useState(initialOrder);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const checkoutRef = useRef<any>(null);
 
   useEffect(() => {
@@ -61,11 +64,27 @@ export function OrderDetailClient({ initialOrder, userEmail }: OrderDetailClient
       const result = await processPayment(token.id, order.id);
       if (result.success) {
         setOrder((prev) => ({ ...prev, status: 'complete' }));
+        toast('Payment successful! Your ticket has been purchased.', 'success');
       } else {
-        alert(result.error || 'Payment failed. Please try again.');
+        toast(result.error || 'Payment failed. Please try again.', 'error');
       }
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    try {
+      const result = await cancelOrder(order.id);
+      if (result.success) {
+        setOrder((prev) => ({ ...prev, status: 'cancelled' }));
+        toast('Order cancelled. The ticket is now available again.', 'info');
+      } else {
+        toast(result.error || 'Failed to cancel order.', 'error');
+      }
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -151,19 +170,29 @@ export function OrderDetailClient({ initialOrder, userEmail }: OrderDetailClient
                     billingAddress={false}
                     zipCode={false}
                   />
-                  <button
-                    onClick={() => checkoutRef.current?.onClick()}
-                    disabled={isProcessing}
-                    type="button"
-                    className="w-full btn btn-accent btn-lg"
-                  >
-                    {isProcessing ? <Spinner /> : (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                      </svg>
-                    )}
-                    {isProcessing ? 'Processing...' : `Pay $${price}`}
-                  </button>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => checkoutRef.current?.onClick()}
+                      disabled={isProcessing || isCancelling}
+                      type="button"
+                      className="flex-1 btn btn-accent btn-lg"
+                    >
+                      {isProcessing ? <Spinner /> : (
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                        </svg>
+                      )}
+                      {isProcessing ? 'Processing...' : `Pay $${price}`}
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      disabled={isProcessing || isCancelling}
+                      type="button"
+                      className="btn btn-outline btn-lg text-red-600 dark:text-red-400 border-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-400"
+                    >
+                      {isCancelling ? <Spinner /> : 'Cancel'}
+                    </button>
+                  </div>
                 </>
               ) : (
                 <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4 text-center">

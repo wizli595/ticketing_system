@@ -1,46 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: tickets-depl
+  name: tickets-depl
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            app: tickets
-    template:
-        metadata:
-            labels:
-                app: tickets
-        spec:
-            containers:
-                - name: tickets
-                  image: abdessalamwizli/tickets
-                  env:
-                      - name: MONGO_URI
-                        value: "mongodb://tickets-mongo-srv:27017/tickets"
-                      - name: JWT_KEY
-                        valueFrom:
-                            secretKeyRef:
-                                name: jwt-secret
-                                key: JWT_KEY
-                      - name: NATS_CLIENT_ID
-                        valueFrom:
-                            fieldRef:
-                                fieldPath: metadata.name
-                      - name: NATS_URL
-                        value: "http://nats-srv:4222"
-                      - name: NATS_CLUSTER_ID
-                        value: "ticketing"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: abdessalamwizli/tickets:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: MONGO_URI
+              value: "mongodb://tickets-mongo-srv:27017/tickets"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "ticketing"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: tickets-srv
+  name: tickets-srv
 spec:
-    selector:
-        app: tickets
-    ports:
-        - name: tickets
-          protocol: TCP
-          port: 3000
-          targetPort: 3000
+  selector:
+    app: tickets
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

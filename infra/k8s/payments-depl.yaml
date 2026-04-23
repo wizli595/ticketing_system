@@ -14,19 +14,38 @@ spec:
     spec:
       containers:
         - name: payments
-          image: abdessalamwizli/payments:d1fc2b7-dirty
+          image: abdessalamwizli/payments:latest
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: NATS_URL
-              value: 'http://nats-srv:4222'
+              value: "http://nats-srv:4222"
             - name: NATS_CLUSTER_ID
-              value: ticketing
+              value: "ticketing"
             - name: MONGO_URI
-              value: 'mongodb://payments-mongo-srv:27017/payments'
+              value: "mongodb://payments-mongo-srv:27017/payments"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import '@/styles/globals.css';
 import { Header, HeaderSkeleton } from '@/components/Header';
 import { ThemeProvider } from '@/lib/theme-provider';
+import { ToastProvider } from '@/components/Toast';
 
 export const metadata: Metadata = {
   title: 'GitTix - Buy & Sell Tickets',
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
       <body className="font-body antialiased">
         <ThemeProvider>
+          <ToastProvider>
           <Suspense fallback={<HeaderSkeleton />}>
             <Header />
           </Suspense>
@@ -49,6 +51,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </div>
             </div>
           </footer>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
