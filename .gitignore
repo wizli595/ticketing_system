@@ -1,3 +1,6 @@
 node_modules/
 .next/
 .vscode
+CLAUDE.md
+.env
+.env.local

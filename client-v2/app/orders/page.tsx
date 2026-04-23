@@ -2,124 +2,74 @@ import { Order } from '@/lib/api';
 import Link from 'next/link';
 import { fetchOrders } from '@/lib/server-actions';
 
-export const revalidate = 0; // Always fetch fresh data
+export const revalidate = 0;
 
-const ORDER_STATUS_CONFIG = {
-  created: { 
-    bg: 'bg-blue-100 dark:bg-blue-950', 
-    text: 'text-blue-800 dark:text-blue-200', 
-    label: 'Pending Payment' 
-  },
-  'awaiting:payment': { 
-    bg: 'bg-yellow-100 dark:bg-yellow-950', 
-    text: 'text-yellow-800 dark:text-yellow-200', 
-    label: 'Awaiting Payment' 
-  },
-  complete: { 
-    bg: 'bg-green-100 dark:bg-green-950', 
-    text: 'text-green-800 dark:text-green-200', 
-    label: 'Completed' 
-  },
-  cancelled: { 
-    bg: 'bg-red-100 dark:bg-red-950', 
-    text: 'text-red-800 dark:text-red-200', 
-    label: 'Cancelled' 
-  },
+const STATUS_MAP: Record<string, { label: string; className: string }> = {
+  created: { label: 'Pending', className: 'badge-info' },
+  'awaiting:payment': { label: 'Awaiting Payment', className: 'badge-warning' },
+  complete: { label: 'Completed', className: 'badge-success' },
+  cancelled: { label: 'Cancelled', className: 'badge-danger' },
 };
 
 export default async function OrdersPage() {
   const orders = await fetchOrders();
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">My Orders</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">View and manage your ticket purchases</p>
+    <div className="section py-10">
+      <div className="mb-10">
+        <h1 className="font-heading text-3xl font-bold text-slate-900 dark:text-white">My Orders</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">View and manage your ticket purchases</p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-12 text-center shadow-soft dark:shadow-none">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-            />
+        <div className="glass-card p-16 text-center">
+          <svg className="mx-auto h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
           </svg>
-          <p className="text-gray-500 dark:text-gray-400 mb-4 text-lg">You haven&apos;t placed any orders yet.</p>
-          <Link href="/" className="btn btn-primary">
-            Browse Tickets
-          </Link>
+          <p className="text-slate-500 dark:text-slate-400 mb-4 text-lg">No orders yet</p>
+          <Link href="/tickets" className="btn btn-primary cursor-pointer">Browse Tickets</Link>
         </div>
       ) : (
-        <div>
-          <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            Showing {orders.length} order{orders.length !== 1 ? 's' : ''}
-          </div>
+        <>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {orders.map((order) => (
+            {orders.map((order: Order) => (
               <OrderCard key={order.id} order={order} />
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
 }
 
-interface OrderCardProps {
-  order: Order;
-}
-
-function OrderCard({ order }: OrderCardProps) {
-  const statusConfig = ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG] || {
-    bg: 'bg-gray-100 dark:bg-gray-800',
-    text: 'text-gray-800 dark:text-gray-200',
-    label: order.status,
-  };
-
-  const expiresAt = new Date(order.expiresAt);
-  const isExpired = expiresAt < new Date();
+function OrderCard({ order }: { order: Order }) {
+  const status = STATUS_MAP[order.status] || { label: order.status, className: 'badge-info' };
   const price = (order.ticket.price / 100).toFixed(2);
+  const canPay = order.status === 'created' || order.status === 'awaiting:payment';
 
   return (
-    <div className="card overflow-hidden hover:shadow-elevated dark:hover:shadow-none transition-all">
-      <div className="card-body">
-        <div className="flex items-start justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 flex-1">
-            {order.ticket.title}
-          </h3>
-          <span className={`flex-shrink-0 ml-2 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${statusConfig.bg} ${statusConfig.text}`}>
-            {statusConfig.label}
-          </span>
-        </div>
-
-        <div className="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            Order ID: <span className="font-mono text-gray-800 dark:text-gray-200">{order.id.slice(0, 8)}...</span>
-          </p>
-          <p>
-            Created: <span className="text-gray-800 dark:text-gray-200">{new Date(order.createdAt).toLocaleDateString()}</span>
-          </p>
-          {isExpired ? (
-            <p className="text-red-600 dark:text-red-400 font-medium">Expired: {expiresAt.toLocaleDateString()}</p>
-          ) : (
-            <p>
-              Expires: <span className="text-gray-800 dark:text-gray-200">{expiresAt.toLocaleDateString()}</span>
-            </p>
-          )}
-        </div>
-
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
-          <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">${price}</p>
-        </div>
+    <Link href={`/orders/${order.id}`} className="glass-card-hover p-6 group cursor-pointer block">
+      <div className="flex items-start justify-between mb-3">
+        <h3 className="font-heading text-lg font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 flex-1">
+          {order.ticket.title}
+        </h3>
+        <span className={`badge ml-2 flex-shrink-0 ${status.className}`}>
+          {status.label}
+        </span>
       </div>
-    </div>
+
+      <div className="space-y-1.5 text-sm text-slate-500 dark:text-slate-400 mb-4">
+        <p className="font-mono text-xs">{order.id.slice(0, 12)}...</p>
+        <p>{new Date(order.expiresAt).toLocaleDateString()}</p>
+      </div>
+
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-slate-700/40">
+        <p className="font-heading text-xl font-bold text-primary-600 dark:text-primary-400 tabular-nums">${price}</p>
+        {canPay && (
+          <span className="text-xs text-accent-600 dark:text-accent-400 font-semibold">Pay now</span>
+        )}
+      </div>
+    </Link>
   );
 }

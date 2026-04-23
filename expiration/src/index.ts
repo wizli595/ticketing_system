@@ -4,10 +4,10 @@ import { OrderCreatedListener } from "./events/listeners/order-created-listener"
 const start = async () => {
     console.log("Expiration service started");
     if (!process.env.NATS_CLIENT_ID)
-        throw new Error("NATS_CLIENT_ID must be defiend");
-    if (!process.env.NATS_URL) throw new Error("NATS_URL must be defiend");
+        throw new Error("NATS_CLIENT_ID must be defined");
+    if (!process.env.NATS_URL) throw new Error("NATS_URL must be defined");
     if (!process.env.NATS_CLUSTER_ID)
-        throw new Error("NATS_CLUSTER_ID must be defiend");
+        throw new Error("NATS_CLUSTER_ID must be defined");
 
     try {
         await natsWrapper.connect(

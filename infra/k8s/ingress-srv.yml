@@ -42,6 +42,6 @@ spec:
                     pathType: ImplementationSpecific
                     backend:
                         service:
-                            name: client-srv
+                            name: client-v2-srv
                             port:
                                 number: 3000

@@ -28,7 +28,7 @@ export function useRequest({
 }: UseRequestOptions): UseRequestReturn {
   const [errors, setErrors] = useState<Array<{ message: string }> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  console.log('useRequest called with:', { url, method, body });
   const doRequest = async (props: Record<string, unknown> = {}) => {
     try {
       setErrors(null);
