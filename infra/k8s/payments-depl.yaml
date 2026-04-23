@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: payments
-          image: abdessalamwizli/payments
+          image: abdessalamwizli/payments:d1fc2b7-dirty
+          imagePullPolicy: IfNotPresent
           env:
             - name: NATS_CLIENT_ID
               valueFrom:

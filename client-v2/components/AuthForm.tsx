@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRequest } from '@/hooks/use-request';
-import { FormContainer, ErrorAlert } from './FormComponents';
+import { FormContainer, ErrorAlert, Spinner } from './FormComponents';
 
 interface AuthFormProps {
   title: string;
@@ -18,14 +19,9 @@ export function AuthForm({ uri, formBase }: AuthFormProps) {
 
   const { doRequest, errors, isLoading } = useRequest({
     url: uri,
-    method: 'post' as const,
-    body: {
-      email,
-      password,
-    },
-    onSuccess: () => {
-      router.push('/');
-    },
+    method: 'post',
+    body: { email, password },
+    onSuccess: () => router.push('/'),
   });
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,21 +30,17 @@ export function AuthForm({ uri, formBase }: AuthFormProps) {
   };
 
   const isSignUp = formBase === 'Up';
-  const submitText = isSignUp ? 'Create Account' : 'Welcome Back';
-  const buttonText = isSignUp ? 'Sign Up' : 'Sign In';
-  const alternativeText = isSignUp ? 'Already have an account?' : "Don't have an account?";
-  const alternativeLink = isSignUp ? '/signin' : '/signup';
-  const alternativeLinkText = isSignUp ? 'Sign in' : 'Create one';
 
   return (
-    <FormContainer title={submitText}>
-      <form onSubmit={onSubmit} className="space-y-6">
+    <FormContainer
+      title={isSignUp ? 'Create Account' : 'Welcome Back'}
+      subtitle={isSignUp ? 'Start buying and selling tickets' : 'Sign in to your account'}
+    >
+      <form onSubmit={onSubmit} className="space-y-5">
         <ErrorAlert errors={errors} />
 
         <div>
-          <label htmlFor="email" className="label">
-            Email Address
-          </label>
+          <label htmlFor="email" className="label">Email Address</label>
           <input
             id="email"
             type="email"
@@ -58,49 +50,39 @@ export function AuthForm({ uri, formBase }: AuthFormProps) {
             placeholder="you@example.com"
             required
             disabled={isLoading}
+            autoComplete="email"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="label">
-            Password
-          </label>
+          <label htmlFor="password" className="label">Password</label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input-field"
-            placeholder="••••••••"
+            placeholder="Enter your password"
             required
             disabled={isLoading}
+            autoComplete={isSignUp ? 'new-password' : 'current-password'}
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          {isLoading ? (
-            <>
-              <span className="inline-block animate-spin mr-2">⏳</span>
-              Loading...
-            </>
-          ) : (
-            buttonText
-          )}
+        <button type="submit" disabled={isLoading} className="btn btn-primary w-full">
+          {isLoading ? <Spinner /> : null}
+          {isLoading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
         </button>
       </form>
 
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
-        {alternativeText}{' '}
-        <a
-          href={alternativeLink}
+      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+        {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <Link
+          href={isSignUp ? '/signin' : '/signup'}
           className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
         >
-          {alternativeLinkText}
-        </a>
+          {isSignUp ? 'Sign in' : 'Create one'}
+        </Link>
       </p>
     </FormContainer>
   );

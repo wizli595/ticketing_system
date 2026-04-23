@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import '@/styles/globals.css';
-import { Header } from '@/components/Header';
+import { Header, HeaderSkeleton } from '@/components/Header';
 import { ThemeProvider } from '@/lib/theme-provider';
 
 export const metadata: Metadata = {
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" fill="black">🎫</text></svg>',
+        url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="80">G</text></svg>',
       },
     ],
   },
@@ -26,17 +27,26 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="bg-gray-50 dark:bg-gray-950 text-gray-950 dark:text-gray-50 antialiased transition-colors">
+      <body className="font-body antialiased">
         <ThemeProvider>
-          <Header />
-          <main className="min-h-[calc(100vh-64px)]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
-            </div>
+          <Suspense fallback={<HeaderSkeleton />}>
+            <Header />
+          </Suspense>
+          <main className="min-h-[calc(100dvh-64px)]">
+            {children}
           </main>
-          <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-16 transition-colors">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-600 dark:text-gray-400 text-sm">
-              <p>&copy; 2026 GitTix. All rights reserved.</p>
+          <footer className="border-t border-slate-200 dark:border-slate-800 mt-20">
+            <div className="section py-10">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  &copy; 2026 GitTix. All rights reserved.
+                </p>
+                <div className="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+                  <span>Built with microservices</span>
+                  <span className="hidden sm:inline">&middot;</span>
+                  <span>Powered by Next.js</span>
+                </div>
+              </div>
             </div>
           </footer>
         </ThemeProvider>

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 
 export default function Error({
@@ -15,78 +14,31 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 px-4 transition-colors">
-      <motion.div
-        className="max-w-md text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          className="mb-6"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-        >
-          <div className="p-6 bg-red-500 rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-lg">
-            <svg
-              className="w-12 h-12 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        </motion.div>
+    <div className="min-h-[calc(100dvh-64px)] flex items-center justify-center px-4">
+      <div className="max-w-md text-center animate-fade-in">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+          <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+        </div>
 
-        <motion.h1
-          className="text-3xl font-bold text-gray-900 dark:text-white mb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Oops! Something went wrong
-        </motion.h1>
-
-        <motion.p
-          className="text-gray-600 dark:text-gray-400 mb-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
+        <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          Something went wrong
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 mb-8">
           We encountered an error. Please try again or return home.
-        </motion.p>
+        </p>
 
-        <motion.div
-          className="flex gap-3"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <motion.button
-            onClick={() => reset()}
-            className="flex-1 btn btn-primary rounded-lg"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+        <div className="flex gap-3">
+          <button onClick={() => reset()} className="flex-1 btn btn-primary cursor-pointer">
             Try Again
-          </motion.button>
-          <motion.a
-            href="/"
-            className="flex-1 btn btn-outline rounded-lg border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-primary-400/10"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          </button>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/" className="flex-1 btn btn-outline cursor-pointer">
             Go Home
-          </motion.a>
-        </motion.div>
-      </motion.div>
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

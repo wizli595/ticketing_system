@@ -30,10 +30,16 @@ export interface AuthResponse {
   currentUser: CurrentUser;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/';
+const isServer = typeof window === 'undefined';
+const API_BASE_URL = isServer
+  ? (process.env.CLUSTER_URL || 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local')
+  : (process.env.NEXT_PUBLIC_API_URL || '/');
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  headers: isServer
+    ? { Host: process.env.INGRESS_HOST || 'ticketing.dev' }
+    : undefined,
 });
 
 export async function fetchTickets(): Promise<Ticket[]> {

@@ -14,7 +14,13 @@ spec:
     spec:
       containers:
         - name: client-v2
-          image: abdessalamwizli/client-v2
+          image: abdessalamwizli/client-v2:d1fc2b7-dirty
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CLUSTER_URL
+              value: 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local'
+            - name: INGRESS_HOST
+              value: 'ticketing.dev'
 ---
 apiVersion: v1
 kind: Service
