@@ -15,27 +15,27 @@ A production-grade microservices ticketing platform where users buy and sell eve
 ### Landing Page
 Search-focused marketplace hero with popular categories and featured listings.
 
-![Landing Page](images/homePge.png)
+![Landing Page](https://raw.githubusercontent.com/wizli595/ticketing_system/master/images/homePge.png)
 
 ### Browse Tickets
 Search, filter by price, and sort available tickets.
 
-![Browse Tickets](images/browse.png)
+![Browse Tickets](https://raw.githubusercontent.com/wizli595/ticketing_system/master/images/browse.png)
 
 ### Create a Ticket
 List your event ticket for sale with title and price.
 
-![Create Ticket](images/create.png)
+![Create Ticket](https://raw.githubusercontent.com/wizli595/ticketing_system/master/images/create.png)
 
 ### My Orders
 Track order status with real-time updates and cancellation badges.
 
-![My Orders](images/orders.png)
+![My Orders](https://raw.githubusercontent.com/wizli595/ticketing_system/master/images/orders.png)
 
 ### My Listings
 Manage your tickets with inline editing and deletion.
 
-![My Listings](images/image.png)
+![My Listings](https://raw.githubusercontent.com/wizli595/ticketing_system/master/images/image.png)
 
 ## Architecture
 
