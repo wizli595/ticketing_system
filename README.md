@@ -15,37 +15,27 @@ A production-grade microservices ticketing platform where users buy and sell eve
 ### Landing Page
 Search-focused marketplace hero with popular categories and featured listings.
 
-<p align="center">
-  <img src="./images/homePge.png" alt="Landing Page" width="100%">
-</p>
+![Landing Page](screenshots/homePge.png)
 
 ### Browse Tickets
 Search, filter by price, and sort available tickets.
 
-<p align="center">
-  <img src="./images/browse.png" alt="Browse Tickets" width="100%">
-</p>
+![Browse Tickets](screenshots/browse.png)
 
 ### Create a Ticket
 List your event ticket for sale with title and price.
 
-<p align="center">
-  <img src="./images/create.png" alt="Create Ticket" width="100%">
-</p>
+![Create Ticket](screenshots/create.png)
 
 ### My Orders
 Track order status with real-time updates and cancellation badges.
 
-<p align="center">
-  <img src="./images/orders.png" alt="My Orders" width="100%">
-</p>
+![My Orders](screenshots/orders.png)
 
 ### My Listings
 Manage your tickets with inline editing and deletion.
 
-<p align="center">
-  <img src="./images/image.png" alt="My Listings" width="100%">
-</p>
+![My Listings](screenshots/image.png)
 
 ## Architecture
 
