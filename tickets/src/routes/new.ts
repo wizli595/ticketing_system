@@ -15,11 +15,12 @@ const ticketsValidation = [
 router.post("/tickets", requireAuth, ticketsValidation,
     validateRequest,
     async (req: Request, res: Response) => {
-        const { title, price } = req.body;
+        const { title, price, categoryId } = req.body;
         const ticket = Ticket.build({
             title,
             price,
-            userId: req.currentUser!.id
+            userId: req.currentUser!.id,
+            ...(categoryId ? { categoryId } : {}),
         })
         await ticket.save()
 

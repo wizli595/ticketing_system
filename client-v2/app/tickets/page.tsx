@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { fetchTickets } from '@/lib/server-actions';
+import { fetchTickets, fetchCategories } from '@/lib/server-actions';
 import { Ticket } from '@/lib/api';
 import { TicketSearch } from '@/components/TicketSearch';
 import { StaggerContainer, StaggerItem } from '@/components/Motion';
@@ -7,13 +7,18 @@ import { StaggerContainer, StaggerItem } from '@/components/Motion';
 export const revalidate = 0;
 
 interface TicketsPageProps {
-  searchParams: Promise<{ q?: string; minPrice?: string; maxPrice?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; minPrice?: string; maxPrice?: string; sort?: string; category?: string }>;
 }
 
 export default async function TicketsPage({ searchParams }: TicketsPageProps) {
   const params = await searchParams;
-  const allTickets = await fetchTickets();
+  const [allTickets, categories] = await Promise.all([fetchTickets(), fetchCategories()]);
   let available = allTickets.filter((ticket: any) => !ticket.orderId);
+
+  // Filter by category
+  if (params.category) {
+    available = available.filter((t: any) => t.categoryId === params.category);
+  }
 
   // Filter by search query
   const query = params.q?.trim().toLowerCase();
@@ -40,7 +45,7 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
   }
 
   const totalAvailable = allTickets.filter((t: any) => !t.orderId).length;
-  const isFiltered = !!(query || minPrice || maxPrice);
+  const isFiltered = !!(query || minPrice || maxPrice || params.category);
 
   return (
     <div className="section py-10">
@@ -56,6 +61,35 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
           Sell Ticket
         </Link>
       </div>
+
+      {/* Category chips */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Link
+            href="/tickets"
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-all cursor-pointer ${
+              !params.category
+                ? 'bg-primary-600 text-white border-primary-600'
+                : 'text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600'
+            }`}
+          >
+            All
+          </Link>
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/tickets?category=${cat.id}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-all cursor-pointer ${
+                params.category === cat.id
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600'
+              }`}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Search & Filters */}
       <TicketSearch
@@ -93,7 +127,7 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
                 : `${available.length} ticket${available.length !== 1 ? 's' : ''} available`}
             </p>
           </div>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {available.map((ticket: Ticket) => (
               <StaggerItem key={ticket.id}>
                 <TicketCard ticket={ticket} />
@@ -108,21 +142,24 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
 
 function TicketCard({ ticket }: { ticket: Ticket }) {
   return (
-    <Link href={`/tickets/${ticket.id}`} className="glass-card-hover p-6 group cursor-pointer block">
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="font-heading text-lg font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 flex-1">
+    <Link href={`/tickets/${ticket.id}`} className="glass-card-hover p-4 sm:p-6 group cursor-pointer block">
+      <div className="flex items-start justify-between gap-3 mb-2 sm:mb-3">
+        <h3 className="font-heading text-base sm:text-lg font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2 flex-1 min-w-0">
           {ticket.title}
         </h3>
-        <svg className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-primary-500 transition-colors ml-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 dark:text-slate-600 group-hover:text-primary-500 transition-colors flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
         </svg>
       </div>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mb-4 font-mono">
+      <p className="text-xs text-slate-400 dark:text-slate-500 mb-3 sm:mb-4 font-mono truncate">
         {ticket.id.slice(0, 12)}...
       </p>
-      <p className="font-heading text-2xl font-bold text-primary-600 dark:text-primary-400 tabular-nums">
-        ${(ticket.price / 100).toFixed(2)}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-heading text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400 tabular-nums">
+          ${(ticket.price / 100).toFixed(2)}
+        </p>
+        <span className="badge badge-success text-[10px] sm:text-xs">Available</span>
+      </div>
     </Link>
   );
 }

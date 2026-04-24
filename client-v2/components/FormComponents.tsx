@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 
 interface FormContainerProps {
   children: ReactNode;
@@ -8,9 +9,25 @@ interface FormContainerProps {
 
 export function FormContainer({ children, title, subtitle }: FormContainerProps) {
   return (
-    <div className="min-h-[calc(100dvh-64px)] flex items-center justify-center py-12 px-4">
+    <div className="min-h-[calc(100dvh-64px)] flex items-center justify-center py-12 px-4 relative">
+      {/* Background decoration */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/5 dark:bg-primary-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-accent-500/5 dark:bg-accent-500/8 rounded-full blur-[80px]" />
+      </div>
+
       <div className="w-full max-w-md">
-        <div className="glass-card p-8">
+        {/* Logo link */}
+        <Link href="/" className="flex items-center justify-center gap-2 mb-8 group">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-sm group-hover:shadow-glow transition-shadow">
+            <svg className="w-[18px] h-[18px] text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+            </svg>
+          </div>
+          <span className="text-lg font-heading font-bold text-slate-900 dark:text-white">GitTix</span>
+        </Link>
+
+        <div className="bg-white/80 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/60 dark:border-slate-700/40 rounded-2xl shadow-xl dark:shadow-2xl p-8">
           <div className="text-center mb-8">
             <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">
               {title}

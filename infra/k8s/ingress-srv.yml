@@ -10,6 +10,13 @@ spec:
         - host: ticketing.dev
           http:
               paths:
+                  - path: /api/categories/?(.*)
+                    pathType: ImplementationSpecific
+                    backend:
+                        service:
+                            name: categories-srv
+                            port:
+                                number: 3000
                   - path: /api/payments/?(.*)
                     pathType: ImplementationSpecific
                     backend:

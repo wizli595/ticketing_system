@@ -6,7 +6,7 @@
 
 import axios, { AxiosError } from 'axios';
 import { cookies } from 'next/headers';
-import { Ticket, Order } from '@/lib/api';
+import { Ticket, Order, Category } from '@/lib/api';
 
 const isServer = typeof window === 'undefined';
 const ingressBase = process.env.CLUSTER_URL || 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
@@ -129,6 +129,20 @@ export async function deleteTicket(
   } catch (error: any) {
     const msg = error?.response?.data?.errors?.[0]?.message || 'Failed to delete ticket';
     return { success: false, error: msg };
+  }
+}
+
+/**
+ * Fetch all categories
+ */
+export async function fetchCategories(): Promise<Category[]> {
+  try {
+    const client = await buildAxios();
+    const response = await client.get('/api/categories');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
   }
 }
 

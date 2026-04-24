@@ -1,11 +1,20 @@
 import axios from 'axios';
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  version: number;
+}
+
 export interface Ticket {
   id: string;
   title: string;
   price: number;
   userId: string;
   version: number;
+  categoryId?: string;
   createdAt: string;
   updatedAt: string;
 }

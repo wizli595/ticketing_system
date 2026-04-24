@@ -41,7 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <div className="section py-10">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  &copy; 2026 GitTix. All rights reserved.
+                  &copy; {new Date().getFullYear()} GitTix. All rights reserved.
                 </p>
                 <div className="flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
                   <span>Built with microservices</span>

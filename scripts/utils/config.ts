@@ -4,19 +4,19 @@ export const ROOT = path.resolve(__dirname, '..', '..');
 
 export const DOCKER_USER = 'abdessalamwizli';
 
-export const SERVICES = ['auth', 'tickets', 'orders', 'payments', 'expiration', 'client-v2'] as const;
+export const SERVICES = ['auth', 'tickets', 'orders', 'payments', 'expiration', 'categories', 'client-v2'] as const;
 
 export type ServiceName = (typeof SERVICES)[number];
 
-export const BACKEND_SERVICES = ['auth', 'tickets', 'orders', 'payments', 'expiration'] as const;
+export const BACKEND_SERVICES = ['auth', 'tickets', 'orders', 'payments', 'expiration', 'categories'] as const;
 
 export type BackendServiceName = (typeof BACKEND_SERVICES)[number];
 
 // Services that use NATS
-export const NATS_SERVICES = ['tickets', 'orders', 'payments', 'expiration'] as const;
+export const NATS_SERVICES = ['tickets', 'orders', 'payments', 'expiration', 'categories'] as const;
 
 // Services that use MongoDB
-export const MONGO_SERVICES = ['auth', 'tickets', 'orders', 'payments'] as const;
+export const MONGO_SERVICES = ['auth', 'tickets', 'orders', 'payments', 'categories'] as const;
 
 export function servicePath(name: string): string {
   return path.join(ROOT, name);

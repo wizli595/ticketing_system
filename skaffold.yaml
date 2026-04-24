@@ -55,4 +55,12 @@ build:
                manual:
                    - dest: .
                      src: "src/**/*.ts"
+        - image: abdessalamwizli/categories
+          context: categories
+          docker:
+              dockerfile: Dockerfile
+          sync:
+              manual:
+                  - dest: .
+                    src: "src/**/*.ts"
 
