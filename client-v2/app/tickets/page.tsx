@@ -2,18 +2,21 @@ import Link from 'next/link';
 import { fetchTickets, fetchCategories } from '@/lib/server-actions';
 import { Ticket } from '@/lib/api';
 import { TicketSearch } from '@/components/TicketSearch';
+import { Pagination } from '@/components/Pagination';
 import { StaggerContainer, StaggerItem } from '@/components/Motion';
 
 export const revalidate = 0;
 
 interface TicketsPageProps {
-  searchParams: Promise<{ q?: string; minPrice?: string; maxPrice?: string; sort?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; minPrice?: string; maxPrice?: string; sort?: string; category?: string; page?: string }>;
 }
 
 export default async function TicketsPage({ searchParams }: TicketsPageProps) {
   const params = await searchParams;
-  const [allTickets, categories] = await Promise.all([fetchTickets(), fetchCategories()]);
-  let available = allTickets.filter((ticket: any) => !ticket.orderId);
+  const page = Math.max(1, parseInt(params.page || '1'));
+
+  const [ticketData, categories] = await Promise.all([fetchTickets(page, 12), fetchCategories()]);
+  let available = ticketData.tickets.filter((ticket: any) => !ticket.orderId);
 
   // Filter by category
   if (params.category) {
@@ -44,8 +47,15 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
     available.sort((a, b) => b.price - a.price);
   }
 
-  const totalAvailable = allTickets.filter((t: any) => !t.orderId).length;
   const isFiltered = !!(query || minPrice || maxPrice || params.category);
+
+  // Build search params for pagination links (preserve filters)
+  const paginationParams: Record<string, string> = {};
+  if (params.q) paginationParams.q = params.q;
+  if (params.minPrice) paginationParams.minPrice = params.minPrice;
+  if (params.maxPrice) paginationParams.maxPrice = params.maxPrice;
+  if (params.sort) paginationParams.sort = params.sort;
+  if (params.category) paginationParams.category = params.category;
 
   return (
     <div className="section py-10">
@@ -123,9 +133,14 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {isFiltered
-                ? `${available.length} of ${totalAvailable} tickets`
-                : `${available.length} ticket${available.length !== 1 ? 's' : ''} available`}
+                ? `${available.length} of ${ticketData.total} tickets`
+                : `${ticketData.total} ticket${ticketData.total !== 1 ? 's' : ''} available`}
             </p>
+            {ticketData.totalPages > 1 && (
+              <p className="text-sm text-slate-400 dark:text-slate-500">
+                Page {ticketData.page} of {ticketData.totalPages}
+              </p>
+            )}
           </div>
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {available.map((ticket: Ticket) => (
@@ -134,6 +149,13 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
               </StaggerItem>
             ))}
           </StaggerContainer>
+
+          <Pagination
+            currentPage={ticketData.page}
+            totalPages={ticketData.totalPages}
+            basePath="/tickets"
+            searchParams={paginationParams}
+          />
         </>
       )}
     </div>

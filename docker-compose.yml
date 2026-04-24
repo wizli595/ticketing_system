@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # ─── Infrastructure ───
+  nats:
+    image: nats-streaming:0.25.6
+    command: [
+      '-p', '4222',
+      '-m', '8222',
+      '-hbi', '5s',
+      '-hbt', '5s',
+      '-hbf', '2',
+      '-SD',
+      '-cid', 'ticketing',
+    ]
+    ports:
+      - '4222:4222'
+      - '8222:8222'
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+
+  # ─── Databases ───
+  auth-mongo:
+    image: mongo:6
+    volumes:
+      - auth-mongo-data:/data/db
+
+  tickets-mongo:
+    image: mongo:6
+    volumes:
+      - tickets-mongo-data:/data/db
+
+  orders-mongo:
+    image: mongo:6
+    volumes:
+      - orders-mongo-data:/data/db
+
+  payments-mongo:
+    image: mongo:6
+    volumes:
+      - payments-mongo-data:/data/db
+
+  categories-mongo:
+    image: mongo:6
+    volumes:
+      - categories-mongo-data:/data/db
+
+  # ─── Services ───
+  auth:
+    build: ./auth
+    environment:
+      - JWT_KEY=your-jwt-secret
+      - MONGO_URI=mongodb://auth-mongo:27017/auth
+    depends_on:
+      - auth-mongo
+
+  tickets:
+    build: ./tickets
+    environment:
+      - JWT_KEY=your-jwt-secret
+      - MONGO_URI=mongodb://tickets-mongo:27017/tickets
+      - NATS_CLIENT_ID=tickets
+      - NATS_URL=http://nats:4222
+      - NATS_CLUSTER_ID=ticketing
+    depends_on:
+      - tickets-mongo
+      - nats
+
+  orders:
+    build: ./orders
+    environment:
+      - JWT_KEY=your-jwt-secret
+      - MONGO_URI=mongodb://orders-mongo:27017/orders
+      - NATS_CLIENT_ID=orders
+      - NATS_URL=http://nats:4222
+      - NATS_CLUSTER_ID=ticketing
+    depends_on:
+      - orders-mongo
+      - nats
+
+  payments:
+    build: ./payments
+    environment:
+      - JWT_KEY=your-jwt-secret
+      - MONGO_URI=mongodb://payments-mongo:27017/payments
+      - NATS_CLIENT_ID=payments
+      - NATS_URL=http://nats:4222
+      - NATS_CLUSTER_ID=ticketing
+      - STRIPE_KEY=${STRIPE_KEY:-sk_test_placeholder}
+    depends_on:
+      - payments-mongo
+      - nats
+
+  expiration:
+    build: ./expiration
+    environment:
+      - NATS_CLIENT_ID=expiration
+      - NATS_URL=http://nats:4222
+      - NATS_CLUSTER_ID=ticketing
+      - REDIS_HOST=redis
+    depends_on:
+      - nats
+      - redis
+
+  categories:
+    build: ./categories
+    environment:
+      - JWT_KEY=your-jwt-secret
+      - MONGO_URI=mongodb://categories-mongo:27017/categories
+      - NATS_CLIENT_ID=categories
+      - NATS_URL=http://nats:4222
+      - NATS_CLUSTER_ID=ticketing
+    depends_on:
+      - categories-mongo
+      - nats
+
+  client-v2:
+    build: ./client-v2
+    ports:
+      - '3000:3000'
+    environment:
+      - CLUSTER_URL=http://nginx
+      - INGRESS_HOST=localhost
+
+  # ─── Reverse Proxy ───
+  nginx:
+    image: nginx:alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - auth
+      - tickets
+      - orders
+      - payments
+      - categories
+      - client-v2
+
+volumes:
+  auth-mongo-data:
+  tickets-mongo-data:
+  orders-mongo-data:
+  payments-mongo-data:
+  categories-mongo-data:

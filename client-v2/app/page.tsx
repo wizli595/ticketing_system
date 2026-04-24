@@ -224,7 +224,7 @@ export default function LandingPage() {
 /* ═══════════════ SERVER COMPONENTS ═══════════════ */
 
 async function FeaturedTickets() {
-  const tickets = await fetchTickets();
+  const { tickets } = await fetchTickets(1, 12);
   const available = tickets.filter((t: any) => !t.orderId).slice(0, 6);
 
   if (available.length === 0) {

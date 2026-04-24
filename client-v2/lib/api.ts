@@ -39,6 +39,15 @@ export interface AuthResponse {
   currentUser: CurrentUser;
 }
 
+export interface PaginatedResponse<T> {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  tickets?: T[];
+  orders?: T[];
+}
+
 const isServer = typeof window === 'undefined';
 const API_BASE_URL = isServer
   ? (process.env.CLUSTER_URL || 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local')

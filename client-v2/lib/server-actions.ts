@@ -6,7 +6,7 @@
 
 import axios, { AxiosError } from 'axios';
 import { cookies } from 'next/headers';
-import { Ticket, Order, Category } from '@/lib/api';
+import { Ticket, Order, Category, PaginatedResponse } from '@/lib/api';
 
 const isServer = typeof window === 'undefined';
 const ingressBase = process.env.CLUSTER_URL || 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
@@ -39,19 +39,25 @@ function isAxiosError(error: unknown): error is AxiosError {
 
   
 /**
- * Fetch all available tickets
+ * Fetch tickets with pagination
  */
-export async function fetchTickets(): Promise<Ticket[]> {
+export async function fetchTickets(page = 1, limit = 20): Promise<{ tickets: Ticket[]; total: number; totalPages: number; page: number }> {
   try {
     const client = await buildAxios();
-    const response = await client.get('/api/tickets');
-    return response.data;
+    const response = await client.get(`/api/tickets?page=${page}&limit=${limit}`);
+    const data = response.data;
+    return {
+      tickets: data.tickets || [],
+      total: data.total || 0,
+      totalPages: data.totalPages || 1,
+      page: data.page || 1,
+    };
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 401) {
-      return [];
+      return { tickets: [], total: 0, totalPages: 1, page: 1 };
     }
     console.error('Error fetching tickets:', error);
-    return [];
+    return { tickets: [], total: 0, totalPages: 1, page: 1 };
   }
 }
 
@@ -92,8 +98,9 @@ export async function fetchMyTickets(): Promise<Ticket[]> {
   try {
     const user = await fetchCurrentUser();
     if (!user) return [];
-    const allTickets = await fetchTickets();
-    return allTickets.filter((t) => t.userId === user.id);
+    // Fetch a large page to get all user's tickets
+    const { tickets } = await fetchTickets(1, 50);
+    return tickets.filter((t) => t.userId === user.id);
   } catch {
     return [];
   }
@@ -147,23 +154,26 @@ export async function fetchCategories(): Promise<Category[]> {
 }
 
 /**
- * Fetch all orders for the current user
+ * Fetch orders with pagination
  */
-export async function fetchOrders(): Promise<Order[]> {
+export async function fetchOrders(page = 1, limit = 20): Promise<{ orders: Order[]; total: number; totalPages: number; page: number }> {
   try {
     const client = await buildAxios();
-    const response = await client.get('/api/orders');
-    console.log('[fetchOrders] Success', response.status, response.data);
-    return response.data;
+    const response = await client.get(`/api/orders?page=${page}&limit=${limit}`);
+    const data = response.data;
+    return {
+      orders: data.orders || [],
+      total: data.total || 0,
+      totalPages: data.totalPages || 1,
+      page: data.page || 1,
+    };
   } catch (error) {
     if (isAxiosError(error)) {
-      console.error('[fetchOrders] Error', error.response?.status, error.response?.statusText);
       if (error.response?.status === 401) {
-        return [];
+        return { orders: [], total: 0, totalPages: 1, page: 1 };
       }
-    } else {
-      console.error('[fetchOrders] Non-axios error:', error);
     }
-    return [];
+    console.error('Error fetching orders:', error);
+    return { orders: [], total: 0, totalPages: 1, page: 1 };
   }
 }
