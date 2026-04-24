@@ -1,0 +1,21 @@
+{
+  "name": "ticketing-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "cli": "tsx scripts/cli.ts",
+    "new-service": "tsx scripts/cli.ts new-service",
+    "build": "tsx scripts/cli.ts build",
+    "test:all": "tsx scripts/cli.ts test all",
+    "test:ci": "tsx scripts/cli.ts test all --ci",
+    "add:listener": "tsx scripts/cli.ts add-listener",
+    "add:route": "tsx scripts/cli.ts add-route",
+    "gen:k8s": "tsx scripts/cli.ts gen-k8s",
+    "health": "tsx scripts/cli.ts health"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0"
+  }
+}
